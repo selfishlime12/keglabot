@@ -115,60 +115,81 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+tg.expand();
+tg.ready();
 
-        const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
+
+// Получаем данные
+const name = params.get('name') || 'Пользователь';
+const uid = params.get('uid') || 'Не определен';
+const req = parseInt(params.get('req')) || 0;
+const ent = params.get('ent') || 0;
+const topData = params.get('top') || '';
+
+// 1. Отображаем текстовые данные
+document.getElementById('display-name').innerText = name.startsWith('@') ? name : '@' + name;
+document.getElementById('display-uid').innerText = 'ID: ' + uid;
+document.getElementById('stat-req').innerText = req;
+document.getElementById('stat-ent').innerText = ent;
+
+// 2. Генерация красивой иконки (первая буква имени)
+const iconElement = document.getElementById('icon-letter');
+iconElement.innerText = name.replace('@', '').charAt(0).toUpperCase();
+
+// Генерируем цвет на основе ID, чтобы у каждого был свой постоянный цвет
+const colors = ['#ff5f57', '#3fb950', '#d29922', '#58a6ff', '#bc8cff', '#ff7b72'];
+const colorIndex = isNaN(uid) ? 0 : parseInt(uid) % colors.length;
+iconElement.style.background = colors[colorIndex];
+
+// 3. Логика уровней и ачивок
+let nextLevel = 10;
+let rank = "Новичок";
+
+if (req >= 10) { 
+    rank = "Продвинутый"; nextLevel = 50; 
+    document.getElementById('b-1').classList.add('active'); 
+}
+if (req >= 50) { 
+    rank = "Мастер"; nextLevel = 100; 
+    document.getElementById('b-2').classList.add('active'); 
+}
+if (req >= 100) { 
+    rank = "Легенда"; nextLevel = req + 1; 
+    document.getElementById('b-3').classList.add('active'); 
+}
+
+document.getElementById('rank-text').innerText = rank;
+document.getElementById('progress-text').innerText = `${req} / ${nextLevel} XP`;
+
+// Анимация полоски
+const progressPercent = Math.min((req / nextLevel) * 100, 100);
+setTimeout(() => {
+    document.getElementById('bar-fill').style.width = progressPercent + '%';
+}, 500);
+
+// 4. Отрисовка ТОПа
+const leaderContainer = document.getElementById('leaderboard-container');
+if (topData) {
+    leaderContainer.innerHTML = ''; // Очистить перед заполнением
+    topData.split('|').forEach((item, index) => {
+        if (!item) return;
+        const [username, count] = item.split(':');
+        const rankColor = index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : '#8b949e';
         
-        // Данные из URL
-        const name = params.get('name') || 'Пользователь';
-        const uid = params.get('uid') || '000000';
-        const req = parseInt(params.get('req')) || 0;
-        const ent = params.get('ent') || 0;
-        const topData = params.get('top') || '';
-
-        // Наполнение профиля
-        document.getElementById('display-name').innerText = name;
-        document.getElementById('display-uid').innerText = 'ID: ' + uid;
-        document.getElementById('icon-letter').innerText = name.charAt(0).toUpperCase();
-        document.getElementById('stat-req').innerText = req;
-        document.getElementById('stat-ent').innerText = ent;
-
-        // Логика уровней
-        let nextLevel = 10;
-        let rank = "Новичок";
-        if (req >= 10) { rank = "Продвинутый"; nextLevel = 50; document.getElementById('b-1').classList.add('active'); }
-        if (req >= 50) { rank = "Мастер"; nextLevel = 100; document.getElementById('b-2').classList.add('active'); }
-        if (req >= 100) { rank = "Легенда"; nextLevel = req; document.getElementById('b-3').classList.add('active'); }
-
-        document.getElementById('rank-text').innerText = rank;
-        document.getElementById('progress-text').innerText = `${req}/${nextLevel} запросов`;
-        
-        const progressPercent = Math.min((req / nextLevel) * 100, 100);
-        setTimeout(() => {
-            document.getElementById('bar-fill').style.width = progressPercent + '%';
-        }, 300);
-
-        // Обработка ТОПа
-        const leaderContainer = document.getElementById('leaderboard-container');
-        if (topData) {
-            topData.split('|').forEach((item, index) => {
-                const [username, count] = item.split(':');
-                const colors = ['#FFD700', '#C0C0C0', '#CD7F32', '#58a6ff', '#58a6ff'];
-                
-                const html = `
-                    <div class="top-item">
-                        <div class="top-rank">${index + 1}</div>
-                        <div class="top-avatar" style="color: ${colors[index] || 'white'}">${username.charAt(0)}</div>
-                        <div class="top-info">
-                            <div class="top-name">@${username}</div>
-                        </div>
-                        <div class="top-count">${count}</div>
-                    </div>
-                `;
-                leaderContainer.innerHTML += html;
-            });
-        }
+        const html = `
+            <div class="top-item">
+                <div class="top-rank" style="color: ${rankColor}">#${index + 1}</div>
+                <div class="top-avatar" style="background: ${colors[username.length % colors.length]}">${username.charAt(0).toUpperCase()}</div>
+                <div class="top-info">
+                    <div class="top-name">@${username}</div>
+                </div>
+                <div class="top-count">${count} req</div>
+            </div>
+        `;
+        leaderContainer.innerHTML += html;
+    });
+}
     </script>
 </body>
 </html>
