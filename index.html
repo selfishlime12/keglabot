@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); font-family: sans-serif; padding: 20px; }
+        .card { background: var(--tg-theme-secondary-bg-color); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+        .stat { font-size: 24px; font-weight: bold; color: var(--tg-theme-button-color); }
+        .label { font-size: 12px; opacity: 0.7; }
+    </style>
+</head>
+<body>
+    <h2>🆔 Профиль пользователя</h2>
+    <div class="card">
+        <div class="label">Дата регистрации</div>
+        <div id="seen" class="stat">...</div>
+    </div>
+    <div class="card">
+        <div class="label">Всего запросов</div>
+        <div id="req" class="stat">0</div>
+    </div>
+    <div class="card">
+        <div class="label">История (последнее)</div>
+        <pre id="hist" style="font-size: 10px;"></pre>
+    </div>
+    <button onclick="window.Telegram.WebApp.close()" style="width: 100%; padding: 10px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; border-radius: 8px;">Закрыть</button>
+
+    <script>
+        // Скрипт читает данные из ссылки (URL) и подставляет в дизайн
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('seen').innerText = params.get('seen') || '—';
+        document.getElementById('req').innerText = params.get('req') || '0';
+        document.getElementById('hist').innerText = decodeURIComponent(params.get('hist') || '');
+        
+        window.Telegram.WebApp.ready();
+    </script>
+</body>
+</html>
