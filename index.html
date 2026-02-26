@@ -4,81 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --accent: #0088cc;
-            --bg: var(--tg-theme-bg-color, #0f0f0f);
+            --gold: #ffcf40;
+            --bg: var(--tg-theme-bg-color, #0a0a0b);
             --text: var(--tg-theme-text-color, #ffffff);
-            --sec-bg: var(--tg-theme-secondary-bg-color, #1c1c1d);
+            --card-bg: rgba(255, 255, 255, 0.05);
         }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; margin: 0; }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 20px; margin-bottom: 15px;
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; padding: 16px; overflow-x: hidden;
+        }
+
+        /* Сияние на фоне */
+        .blob {
+            position: fixed; width: 300px; height: 300px;
+            background: var(--accent); filter: blur(120px);
+            opacity: 0.1; z-index: -1; top: -100px; right: -100px;
+        }
+
+        .header { margin-bottom: 24px; animation: fadeIn 0.8s ease; }
+        .header h1 { font-size: 28px; margin: 0; font-weight: 800; letter-spacing: -1px; }
+
+        /* Карточка ранга */
+        .rank-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
             border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 28px; padding: 25px; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); margin-bottom: 20px;
         }
-
-        .btn-top {
-            width: 100%; background: var(--accent); color: white;
-            border: none; padding: 12px; border-radius: 12px;
-            font-weight: bold; margin-top: 10px; cursor: pointer;
+        .rank-badge {
+            width: 80px; height: 80px; background: var(--accent);
+            border-radius: 50%; margin: 0 auto 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; box-shadow: 0 0 30px rgba(0,136,204,0.4);
         }
+        .rank-name { font-size: 22px; font-weight: 800; text-transform: uppercase; }
 
-        /* Стили для таблицы ТОП */
-        #top-list { display: none; margin-top: 15px; animation: slideDown 0.3s ease; }
-        .top-item {
-            display: flex; justify-content: space-between;
-            padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        /* Таблица лидеров */
+        .leaderboard {
+            background: var(--card-bg); border-radius: 24px; padding: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .top-item:last-child { border: none; }
-        .rank-num { color: var(--accent); font-weight: bold; margin-right: 10px; }
+        .user-row {
+            display: flex; align-items: center; padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-row:last-child { border: none; }
+        .pos { width: 30px; font-weight: 800; color: var(--accent); }
+        .u-id { flex-grow: 1; font-family: monospace; opacity: 0.7; }
+        .score { font-weight: 700; background: rgba(0,136,204,0.1); padding: 4px 10px; border-radius: 10px; }
 
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="glass-card">
-        <h2 style="margin-top:0">🆔 Профиль</h2>
-        <p>Запросов: <b id="req">0</b></p>
-        <button class="btn-top" onclick="toggleTop()">🏆 ПОКАЗАТЬ ТОП ЮЗЕРОВ</button>
-        
-        <div id="top-list">
-            <h3 style="font-size: 14px; opacity: 0.6; text-align: center;">ТОП-5 ЛИДЕРОВ</h3>
-            <div id="list-container"></div>
+    <div class="blob"></div>
+    
+    <div class="header">
+        <h1>Профиль</h1>
+        <div style="opacity: 0.5; font-size: 13px;" id="u-label">ID: ...</div>
+    </div>
+
+    <div class="rank-card">
+        <div class="rank-badge" id="r-icon">👤</div>
+        <div class="rank-name" id="r-name">Загрузка...</div>
+        <div style="margin-top: 10px; opacity: 0.6; font-size: 14px;">
+            Всего запросов: <span id="req-count">0</span>
         </div>
     </div>
+
+    <h3 style="margin: 25px 0 15px 10px;">🏆 Топ лидеров</h3>
+    <div class="leaderboard" id="leaderboard-list">
+        </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         
         const params = new URLSearchParams(window.location.search);
-        document.getElementById('req').innerText = params.get('req') || '0';
+        const reqs = parseInt(params.get('req')) || 0;
+        
+        document.getElementById('u-label').innerText = 'ID: ' + params.get('uid');
+        document.getElementById('req-count').innerText = reqs;
 
-        // Логика ТОПа
-        function toggleTop() {
-            const list = document.getElementById('top-list');
-            const isVisible = list.style.display === 'block';
-            list.style.display = isVisible ? 'none' : 'block';
-            tg.HapticFeedback.impactOccurred('medium');
-        }
+        // Логика рангов
+        const ranks = [
+            {min: 100, name: 'Легенда', icon: '👑', color: '#ffcf40'},
+            {min: 50, name: 'Мастер', icon: '🔥', color: '#ff4b2b'},
+            {min: 10, name: 'Опытный', icon: '⭐️', color: '#0088cc'},
+            {min: 0, name: 'Новичок', icon: '🐣', color: '#4caf50'}
+        ];
+        const r = ranks.find(x => reqs >= x.min);
+        document.getElementById('r-name').innerText = r.name;
+        document.getElementById('r-icon').innerText = r.icon;
+        document.getElementById('r-icon').style.background = r.color;
 
-        const topData = params.get('top'); // Берем строку "id:count|id:count"
+        // Отрисовка топа
+        const topData = params.get('top');
         if (topData) {
-            const container = document.getElementById('list-container');
-            topData.split('|').forEach((item, index) => {
-                const [uid, count] = item.split(':');
-                const div = document.createElement('div');
-                div.className = 'top-item';
-                div.innerHTML = `
-                    <span><span class="rank-num">#${index + 1}</span> ID: ${uid.slice(0, 5)}...</span>
-                    <b>${count}</b>
-                `;
-                container.appendChild(div);
+            const list = document.getElementById('leaderboard-list');
+            topData.split('|').forEach((item, i) => {
+                const [id, count] = item.split(':');
+                const medals = ['🥇', '🥈', '🥉', '4', '5'];
+                list.innerHTML += `
+                    <div class="user-row">
+                        <div class="pos">${medals[i]}</div>
+                        <div class="u-id">ID: ${id.slice(0,5)}***</div>
+                        <div class="score">${count}</div>
+                    </div>`;
             });
         }
+
+        tg.MainButton.setText("ВЕРНУТЬСЯ В БОТ").show().onClick(() => tg.close());
     </script>
 </body>
 </html>
