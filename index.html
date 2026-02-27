@@ -42,7 +42,6 @@
             100% { background-position: 0% 0%; }
         }
 
-        /* Звёзды — теперь 200 штук с эффектом кометы */
         .stars {
             position: fixed;
             inset: 0;
@@ -55,7 +54,6 @@
             position: absolute;
             background: white;
             border-radius: 50%;
-            /* Эффект кометы — длинный белый + лёгкий фиолетовый след */
             box-shadow: 
                 0 0 4px 1px rgba(255,255,255,0.9),
                 0 0 12px 4px rgba(255,255,255,0.6),
@@ -75,32 +73,18 @@
             to   { opacity: 0.9; }
         }
 
-        /* 200 звёзд с разными траекториями и скоростями (12–22 секунды) */
-        .star:nth-child(1)   { --dx:  140vw; --dy: -100vh; width: 1.1px; height: 1.1px; top: 5%;   left: 8%;  animation-duration: 15s; }
-        .star:nth-child(2)   { --dx: -160vw; --dy:  120vh; width: 1.8px; height: 1.8px; top: 12%;  left: 22%; animation-duration: 18s; }
-        .star:nth-child(3)   { --dx:  180vw; --dy: -130vh; width: 1.4px; height: 1.4px; top: 18%;  left: 35%; animation-duration: 13s; }
-        .star:nth-child(4)   { --dx: -120vw; --dy:  140vh; width: 2.0px; height: 2.0px; top: 25%;  left: 48%; animation-duration: 16s; }
-        .star:nth-child(5)   { --dx:  150vw; --dy: -110vh; width: 0.9px; height: 0.9px; top: 32%;  left: 60%; animation-duration: 20s; }
-        .star:nth-child(6)   { --dx: -200vw; --dy:  90vh;  width: 2.2px; height: 2.2px; top: 38%;  left: 72%; animation-duration: 14s; }
-        .star:nth-child(7)   { --dx:  130vw; --dy: -150vh; width: 1.6px; height: 1.6px; top: 45%;  left: 85%; animation-duration: 17s; }
-        .star:nth-child(8)   { --dx: -140vw; --dy:  160vh; width: 1.9px; height: 1.9px; top: 52%;  left: 5%;  animation-duration: 19s; }
-        .star:nth-child(9)   { --dx:  170vw; --dy: -120vh; width: 1.3px; height: 1.3px; top: 58%;  left: 18%; animation-duration: 15.5s;}
-        .star:nth-child(10)  { --dx: -180vw; --dy:  110vh; width: 2.1px; height: 2.1px; top: 65%;  left: 30%; animation-duration: 21s; }
-        /* ... и так далее до 200 (в коде ниже все 200 генерируются автоматически через JS) */
-
-        /* Гифка в правом верхнем углу */
+        /* Гифка закреплена в левом верхнем углу навсегда */
         .fire-gif {
             position: fixed;
             top: 20px;
-            right: 20px;
+            left: 20px;
             width: 80px;
             height: 80px;
             pointer-events: none;
-            z-index: 100;
+            z-index: 1000; /* поверх всего контента */
             opacity: 0.85;
         }
 
-        /* Остальные стили (без изменений) */
         .profile-header { text-align: center; margin-bottom: 25px; position: relative; }
         .user-icon {
             width: 70px; height: 70px; background: var(--accent);
@@ -249,7 +233,7 @@
 </head>
 <body>
 
-    <!-- 200 звёзд с кометным следом и умеренной скоростью -->
+    <!-- 100 звёзд -->
     <div class="stars" id="stars-container"></div>
 
     <div class="profile-header">
@@ -282,13 +266,14 @@
                 <div style="font-size:14px; color:var(--text-hint);">Входов: <span id="stat-ent">0</span></div>
             </div>
         </div>
-
-        <img 
-            src="https://tenor.com/ru/view/fire-writing-gif-25649629.gif" 
-            alt="Fire writing" 
-            class="fire-gif"
-        >
     </div>
+
+    <!-- Гифка закреплена в левом верхнем углу -->
+    <img 
+        src="https://tenor.com/ru/view/fire-writing-gif-25649629.gif" 
+        alt="Fire writing" 
+        class="fire-gif"
+    >
 
     <div class="glass-card">
         <div class="achievements-grid">
@@ -312,22 +297,19 @@
         tg.expand();
         tg.ready();
 
-        // Генерация 200 звёзд динамически (чтобы не писать вручную)
+        // Генерация 100 звёзд
         const starsContainer = document.getElementById('stars-container');
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 100; i++) {
             const star = document.createElement('div');
             star.className = 'star';
 
-            // Случайная позиция
             star.style.top = Math.random() * 100 + '%';
             star.style.left = Math.random() * 100 + '%';
 
-            // Случайный размер 0.8–2.5px
             const size = 0.8 + Math.random() * 1.7;
             star.style.width = size + 'px';
             star.style.height = size + 'px';
 
-            // Случайное направление и скорость (12–22 секунды)
             const dx = (Math.random() > 0.5 ? 1 : -1) * (80 + Math.random() * 140) + 'vw';
             const dy = (Math.random() > 0.5 ? 1 : -1) * (80 + Math.random() * 140) + 'vh';
             star.style.setProperty('--dx', dx);
@@ -337,7 +319,7 @@
             starsContainer.appendChild(star);
         }
 
-        // Остальной скрипт (профиль, rickroll и т.д.) без изменений
+        // Остальной скрипт профиля и rickroll (без изменений)
         const params = new URLSearchParams(window.location.search);
         const name = params.get('name') || 'Пользователь';
         const uid = params.get('uid') || 'Не определен';
@@ -401,7 +383,7 @@
             });
         }
 
-        // Rick Roll с паузой при скролле вверх
+        // Rick Roll (без изменений)
         const rickrollSection = document.getElementById('rickroll-section');
         const placeholder = document.getElementById('youtube-placeholder');
         let iframe = null;
