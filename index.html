@@ -73,16 +73,16 @@
             to   { opacity: 0.9; }
         }
 
-        /* Гифка НЕПОДВИЖНА в левом верхнем углу — никогда не скроллится */
+        /* Гифка теперь обычная — скроллится вместе со страницей */
         .fire-gif {
-            position: fixed;
-            top: 20px;
-            left: 20px;
             width: 80px;
             height: 80px;
             pointer-events: none;
-            z-index: 1000;           /* всегда сверху */
             opacity: 0.85;
+            position: absolute;
+            top: -20px;          /* чуть выше карточки уровня */
+            right: -10px;        /* правый верхний угол карточки */
+            z-index: 2;
         }
 
         .profile-header { text-align: center; margin-bottom: 25px; position: relative; }
@@ -233,7 +233,7 @@
 </head>
 <body>
 
-    <!-- 100 звёзд -->
+    <!-- 50 звёзд -->
     <div class="stars" id="stars-container"></div>
 
     <div class="profile-header">
@@ -266,14 +266,14 @@
                 <div style="font-size:14px; color:var(--text-hint);">Входов: <span id="stat-ent">0</span></div>
             </div>
         </div>
-    </div>
 
-    <!-- Гифка НЕПОДВИЖНА в левом верхнем углу -->
-    <img 
-        src="https://tenor.com/ru/view/fire-writing-gif-25649629.gif" 
-        alt="Fire writing" 
-        class="fire-gif"
-    >
+        <!-- Гифка теперь скроллится вместе со страницей -->
+        <img 
+            src="https://tenor.com/ru/view/fire-writing-gif-25649629.gif" 
+            alt="Fire writing" 
+            class="fire-gif"
+        >
+    </div>
 
     <div class="glass-card">
         <div class="achievements-grid">
@@ -297,9 +297,9 @@
         tg.expand();
         tg.ready();
 
-        // Генерация 100 звёзд
+        // Генерация 50 звёзд
         const starsContainer = document.getElementById('stars-container');
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
             const star = document.createElement('div');
             star.className = 'star';
 
