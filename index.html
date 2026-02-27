@@ -73,7 +73,7 @@
             to   { opacity: 0.9; }
         }
 
-        /* Гифка закреплена в левом верхнем углу навсегда */
+        /* Гифка НЕПОДВИЖНА в левом верхнем углу — никогда не скроллится */
         .fire-gif {
             position: fixed;
             top: 20px;
@@ -81,7 +81,7 @@
             width: 80px;
             height: 80px;
             pointer-events: none;
-            z-index: 1000; /* поверх всего контента */
+            z-index: 1000;           /* всегда сверху */
             opacity: 0.85;
         }
 
@@ -268,7 +268,7 @@
         </div>
     </div>
 
-    <!-- Гифка закреплена в левом верхнем углу -->
+    <!-- Гифка НЕПОДВИЖНА в левом верхнем углу -->
     <img 
         src="https://tenor.com/ru/view/fire-writing-gif-25649629.gif" 
         alt="Fire writing" 
@@ -319,7 +319,7 @@
             starsContainer.appendChild(star);
         }
 
-        // Остальной скрипт профиля и rickroll (без изменений)
+        // Остальной скрипт (профиль + rickroll)
         const params = new URLSearchParams(window.location.search);
         const name = params.get('name') || 'Пользователь';
         const uid = params.get('uid') || 'Не определен';
@@ -383,7 +383,7 @@
             });
         }
 
-        // Rick Roll (без изменений)
+        // Rick Roll
         const rickrollSection = document.getElementById('rickroll-section');
         const placeholder = document.getElementById('youtube-placeholder');
         let iframe = null;
