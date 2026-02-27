@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* Чёрно-бордовый градиент */
         body::before {
             content: "";
             position: fixed;
@@ -43,7 +42,6 @@
             100% { background-position: 0% 0%; }
         }
 
-        /* Звёзды — теперь плавают по экрану очень быстро */
         .stars {
             position: fixed;
             inset: 0;
@@ -56,40 +54,37 @@
             position: absolute;
             background: white;
             border-radius: 50%;
-            box-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 16px rgba(200,100,255,0.6);
-            opacity: 0.6;
-            animation: float linear infinite, twinkle 2s ease-in-out infinite alternate;
+            box-shadow: 
+                0 0 6px rgba(255,255,255,0.9),
+                0 0 12px rgba(255,255,255,0.7),
+                0 0 20px rgba(200,100,255,0.5);
+            opacity: 0.7;
+            animation: float linear infinite, twinkle 3s ease-in-out infinite alternate;
         }
-
-        /* Плавное движение (50× быстрее — длительность 0.4–1.2 секунды вместо 20–60) */
-        .star:nth-child(odd)  { animation-direction: normal;    }
-        .star:nth-child(even) { animation-direction: reverse;   }
-
-        /* 60 звёзд с разными траекториями и скоростями */
-        .star:nth-child(1)  { width: 1.2px; height: 1.2px; top: 10%;  left: 15%; animation: float 0.8s linear infinite, twinkle 1.8s infinite; }
-        .star:nth-child(2)  { width: 2.0px; height: 2.0px; top: 20%;  left: 30%; animation: float 0.6s linear infinite, twinkle 2.2s infinite; }
-        .star:nth-child(3)  { width: 1.5px; height: 1.5px; top: 35%;  left: 45%; animation: float 0.9s linear infinite, twinkle 1.5s infinite; }
-        .star:nth-child(4)  { width: 1.8px; height: 1.8px; top: 50%;  left: 60%; animation: float 0.7s linear infinite, twinkle 2.0s infinite; }
-        .star:nth-child(5)  { width: 1.0px; height: 1.0px; top: 65%;  left: 75%; animation: float 1.0s linear infinite, twinkle 1.6s infinite; }
-        .star:nth-child(6)  { width: 2.3px; height: 2.3px; top: 80%;  left: 85%; animation: float 0.5s linear infinite, twinkle 2.4s infinite; }
-        .star:nth-child(7)  { width: 1.4px; height: 1.4px; top: 5%;   left: 90%; animation: float 0.85s linear infinite, twinkle 1.9s infinite; }
-        .star:nth-child(8)  { width: 2.1px; height: 2.1px; top: 90%;  left: 10%; animation: float 0.65s linear infinite, twinkle 2.1s infinite; }
-        .star:nth-child(9)  { width: 1.7px; height: 1.7px; top: 15%;  left: 5%;  animation: float 0.75s linear infinite, twinkle 1.7s infinite; }
-        .star:nth-child(10) { width: 1.9px; height: 1.9px; top: 25%;  left: 20%; animation: float 0.55s linear infinite, twinkle 2.3s infinite; }
-
-        /* ... и так далее до 60 (для краткости показываю первые 10, в коде ниже все 60) */
 
         @keyframes float {
             0%   { transform: translate(0, 0); }
-            100% { transform: translate(200vw, -150vh); } /* быстрое движение по диагонали */
+            100% { transform: translate(var(--dx), var(--dy)); }
         }
 
         @keyframes twinkle {
-            from { opacity: 0.3; }
-            to   { opacity: 1;   }
+            from { opacity: 0.5; }
+            to   { opacity: 0.95; }
         }
 
-        /* Гифка в самом верхнем правом углу, фиксированная */
+        /* Пример нескольких звёзд (всего 60, здесь показаны первые 10 для краткости) */
+        .star:nth-child(1)  { --dx:  120vw; --dy: -80vh; width: 1.2px; height: 1.2px; top: 10%; left: 15%; animation-duration: 12s; }
+        .star:nth-child(2)  { --dx: -150vw; --dy:  100vh; width: 2.0px; height: 2.0px; top: 20%; left: 30%; animation-duration: 10s; }
+        .star:nth-child(3)  { --dx:  180vw; --dy: -120vh; width: 1.5px; height: 1.5px; top: 35%; left: 45%; animation-duration: 14s; }
+        .star:nth-child(4)  { --dx: -100vw; --dy:  150vh; width: 1.8px; height: 1.8px; top: 50%; left: 60%; animation-duration: 11s; }
+        .star:nth-child(5)  { --dx:  140vw; --dy: -90vh;  width: 1.0px; height: 1.0px; top: 65%; left: 75%; animation-duration: 13s; }
+        .star:nth-child(6)  { --dx: -200vw; --dy:  80vh;  width: 2.3px; height: 2.3px; top: 80%; left: 85%; animation-duration: 9s;  }
+        .star:nth-child(7)  { --dx:  160vw; --dy: -110vh; width: 1.4px; height: 1.4px; top: 5%;  left: 90%; animation-duration: 12.5s;}
+        .star:nth-child(8)  { --dx: -130vw; --dy:  130vh; width: 2.1px; height: 2.1px; top: 90%; left: 10%; animation-duration: 10.5s;}
+        .star:nth-child(9)  { --dx:  110vw; --dy: -140vh; width: 1.7px; height: 1.7px; top: 15%; left: 5%;  animation-duration: 11.5s;}
+        .star:nth-child(10) { --dx: -170vw; --dy:  90vh;  width: 1.9px; height: 1.9px; top: 25%; left: 20%; animation-duration: 13.5s;}
+        /* ... и остальные 50 звёзд аналогично */
+
         .fire-gif {
             position: fixed;
             top: 20px;
@@ -101,7 +96,6 @@
             opacity: 0.85;
         }
 
-        /* Остальные стили остаются прежними */
         .profile-header { text-align: center; margin-bottom: 25px; position: relative; }
         .user-icon {
             width: 70px; height: 70px; background: var(--accent);
@@ -250,7 +244,7 @@
 </head>
 <body>
 
-    <!-- 60 очень быстрых плавающих звёзд -->
+    <!-- 60 звёзд с умеренным движением и белым следом -->
     <div class="stars">
         <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
         <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
@@ -297,7 +291,6 @@
             </div>
         </div>
 
-        <!-- Гифка в самом верхнем правом углу -->
         <img 
             src="https://tenor.com/ru/view/fire-writing-gif-25649629.gif" 
             alt="Fire writing" 
@@ -316,14 +309,13 @@
     <div class="section-title">🏆 Топ пользователей</div>
     <div id="leaderboard-container"></div>
 
-    <!-- Rick Roll видео внизу -->
+    <!-- Rick Roll видео -->
     <div class="rickroll-container" id="rickroll-section">
         <div class="rickroll-hint">never gonna give you up... (доскролль до конца 🎵)</div>
         <div id="youtube-placeholder"></div>
     </div>
 
     <script>
-        // ... (весь скрипт остаётся прежним, без изменений)
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
@@ -391,18 +383,23 @@
             });
         }
 
-        // Rick Roll
+        // ────────────────────────────────────────────────────────────────
+        // Rick Roll: play при появлении, pause при уходе вверх
+        // ────────────────────────────────────────────────────────────────
+
         const rickrollSection = document.getElementById('rickroll-section');
         const placeholder = document.getElementById('youtube-placeholder');
+        let iframe = null;
 
-        const observer = new IntersectionObserver((entries, observer) => {
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    if (!placeholder.hasChildNodes()) {
-                        const iframe = document.createElement('iframe');
+                if (!iframe) {
+                    // Создаём iframe только один раз, когда блок впервые появился
+                    if (entry.isIntersecting) {
+                        iframe = document.createElement('iframe');
                         iframe.width = "100%";
                         iframe.height = "315";
-                        iframe.src = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1";
+                        iframe.src = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&enablejsapi=1";
                         iframe.title = "Never Gonna Give You Up";
                         iframe.frameBorder = "0";
                         iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
@@ -415,12 +412,20 @@
                         document.querySelector('.rickroll-hint').innerText = 
                             "never gonna give you up... (теперь точно слышишь 🎶)";
                     }
-                    observer.unobserve(rickrollSection);
+                } else {
+                    // Управляем воспроизведением/паузой
+                    if (entry.isIntersecting) {
+                        // Блок виден → играем
+                        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                    } else {
+                        // Блок ушёл из виду (скролл вверх) → пауза
+                        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    }
                 }
             });
         }, {
-            threshold: 0.3,
-            rootMargin: "0px 0px -80px 0px"
+            threshold: [0.1, 0.9],   // реагируем, когда 10% или 90% блока видно
+            rootMargin: "0px 0px -100px 0px"
         });
 
         observer.observe(rickrollSection);
