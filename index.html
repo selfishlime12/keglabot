@@ -6,22 +6,78 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0d1117;
+            --bg-color: #0a0e17;
             --accent: #0088cc;
             --accent-glow: rgba(0, 136, 204, 0.4);
-            --card-bg: rgba(22, 27, 34, 0.8);
+            --card-bg: rgba(22, 27, 34, 0.75);
             --text-main: #ffffff;
             --text-hint: #8b949e;
         }
+
         body {
-            background: var(--bg-color);
-            background-image: radial-gradient(circle at top left, rgba(0, 136, 204, 0.1), transparent 40%);
+            margin: 0;
+            padding: 20px;
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 20px; overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: var(--bg-color);
+            position: relative;
         }
-        /* Шапка профиля */
-        .profile-header { text-align: center; margin-bottom: 25px; }
+
+        /* Плавный космический градиент с медленной анимацией */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 70%, #0f1a3a 0%, #0a0e17 40%, #000814 100%);
+            background-size: 300% 300%;
+            animation: cosmicFlow 45s ease infinite;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        @keyframes cosmicFlow {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Плавающие звёзды (разные размеры и скорости) */
+        .stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255,255,255,0.8);
+            opacity: 0;
+            animation: twinkle linear infinite;
+        }
+
+        /* Разные звёзды с разной скоростью и размерами */
+        .star:nth-child(1)  { width: 2px;  height: 2px;  top: 15%;  left: 10%;  animation-duration: 18s; animation-delay: 0s;   }
+        .star:nth-child(2)  { width: 1.5px; height: 1.5px; top: 25%;  left: 35%;  animation-duration: 22s; animation-delay: 3s;  }
+        .star:nth-child(3)  { width: 3px;   height: 3px;   top: 40%;  left: 60%;  animation-duration: 15s; animation-delay: 7s;  }
+        .star:nth-child(4)  { width: 1px;   height: 1px;   top: 55%;  left: 80%;  animation-duration: 25s; animation-delay: 1s;  }
+        .star:nth-child(5)  { width: 2.5px; height: 2.5px; top: 70%;  left: 20%;  animation-duration: 20s; animation-delay: 5s;  }
+        .star:nth-child(6)  { width: 2px;   height: 2px;   top: 10%;  left: 70%;  animation-duration: 19s; animation-delay: 9s;  }
+        .star:nth-child(7)  { width: 1.8px; height: 1.8px; top: 85%;  left: 45%;  animation-duration: 23s; animation-delay: 4s;  }
+        .star:nth-child(8)  { width: 3.2px; height: 3.2px; top: 30%;  left: 88%;  animation-duration: 16s; animation-delay: 11s; }
+
+        @keyframes twinkle {
+            0%, 100%   { opacity: 0; transform: scale(0.8); }
+            50%        { opacity: 0.9; transform: scale(1.2); }
+        }
+
+        /* Остальные стили остаются прежними */
+        .profile-header { text-align: center; margin-bottom: 25px; position: relative; }
         .user-icon {
             width: 70px; height: 70px; background: var(--accent);
             border-radius: 50%; margin: 0 auto 10px;
@@ -30,79 +86,183 @@
         }
         .user-name { font-size: 22px; font-weight: 800; margin: 0; }
         .user-id { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
-        /* Карточки */
+
+        .level-wrapper { position: relative; margin: 20px 0; }
+        .level-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+        .level-left { display: flex; align-items: center; gap: 12px; }
+        .level-right { text-align: right; }
+        .level-name { font-size: 18px; font-weight: 700; }
+        .progress-container {
+            height: 8px;
+            background: #21262d;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+            width: 180px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #58a6ff);
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fire-gif {
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .mirror-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            transform: scaleX(-1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
         .glass-card {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px; padding: 15px; margin-bottom: 15px;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
         }
-        /* Система уровней */
-        .level-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; font-weight: 600; }
-        .progress-container { height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; }
-        .progress-fill {
-            height: 100%; background: linear-gradient(90deg, var(--accent), #58a6ff);
-            width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
         }
-        /* Сетка ачивок */
-        .achievements-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+
         .badge {
-            background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px 5px;
-            text-align: center; font-size: 10px; color: var(--text-hint);
-            border: 1px solid transparent; transition: 0.3s;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-hint);
+            border: 1px solid transparent;
+            transition: 0.3s;
         }
-        .badge.active { border-color: var(--accent); color: white; background: rgba(0, 136, 204, 0.1); }
-        .badge-icon { font-size: 20px; display: block; margin-bottom: 5px; filter: grayscale(1); opacity: 0.4; }
-        .badge.active .badge-icon { filter: grayscale(0); opacity: 1; }
-        /* Таблица лидеров */
+
+        .badge.active {
+            border-color: var(--accent);
+            color: white;
+            background: rgba(0, 136, 204, 0.1);
+        }
+
+        .badge-icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 5px;
+            filter: grayscale(1);
+            opacity: 0.4;
+        }
+
+        .badge.active .badge-icon {
+            filter: grayscale(0);
+            opacity: 1;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 20px 0 12px 5px;
+            color: var(--text-hint);
+        }
+
         .top-item {
-            display: flex; align-items: center; padding: 12px;
-            background: rgba(255, 255, 255, 0.02); border-radius: 15px; margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            margin-bottom: 8px;
         }
+
         .top-rank { width: 25px; font-weight: 800; color: var(--accent); }
-        .top-avatar { width: 32px; height: 32px; border-radius: 50%; background: #30363d; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;}
+        .top-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #30363d; margin-right: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: bold;
+        }
         .top-info { flex-grow: 1; }
         .top-name { font-size: 14px; font-weight: 600; }
         .top-count { font-size: 12px; color: var(--accent); font-weight: 700; }
-        .section-title { font-size: 16px; font-weight: 700; margin: 20px 0 12px 5px; color: var(--text-hint); }
-
-        /* Блок с rickroll видео */
-        .rickroll-container {
-            text-align: center;
-            margin: 80px 0 60px 0;
-            opacity: 0.92;
-            min-height: 350px;
-        }
-        .rickroll-container iframe {
-            width: 100%;
-            max-width: 560px;
-            height: 315px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        }
-        .rickroll-hint {
-            margin-bottom: 16px;
-            font-size: 15px;
-            color: var(--text-hint);
-            font-style: italic;
-        }
     </style>
 </head>
 <body>
+
+    <!-- Плавающие звёзды -->
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
     <div class="profile-header">
         <div class="user-icon" id="icon-letter">?</div>
         <h1 class="user-name" id="display-name">Загрузка...</h1>
         <div class="user-id" id="display-uid">ID: 00000000</div>
     </div>
 
+    <div class="level-wrapper">
+        <div class="level-card">
+            <div class="level-left">
+                <img 
+                    src="https://i.pinimg.com/736x/aa/56/fe/aa56fee8b90fc5162abefd6c98ee7b7a.jpg" 
+                    alt="Mirror photo" 
+                    class="mirror-photo"
+                >
+                <div>
+                    <div class="level-name" id="rank-text">Новичок</div>
+                    <div class="progress-container">
+                        <div class="progress-fill" id="bar-fill"></div>
+                    </div>
+                    <div id="progress-text" style="font-size:12px; color:var(--text-hint); margin-top:4px;">
+                        0 / 10 XP
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-right">
+                <div style="font-size:14px; color:var(--text-hint);">Запросов: <span id="stat-req">0</span></div>
+                <div style="font-size:14px; color:var(--text-hint);">Входов: <span id="stat-ent">0</span></div>
+            </div>
+        </div>
+
+        <img 
+            src="https://tenor.com/ru/view/fire-writing-gif-25649629.gif" 
+            alt="Fire writing" 
+            class="fire-gif"
+        >
+    </div>
+
     <div class="glass-card">
-        <div class="level-label">
-            <span id="rank-text">Новичок</span>
-            <span id="progress-text">0/10 запросов</span>
-        </div>
-        <div class="progress-container">
-            <div class="progress-fill" id="bar-fill"></div>
-        </div>
         <div class="achievements-grid">
             <div class="badge" id="b-1"><span class="badge-icon">🐣</span>Старт</div>
             <div class="badge" id="b-2"><span class="badge-icon">⚡</span>Актив</div>
@@ -110,26 +270,8 @@
         </div>
     </div>
 
-    <div class="section-title">📊 Статистика</div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="glass-card" style="text-align: center; margin-bottom: 0;">
-            <div style="font-size: 20px; font-weight: 800;" id="stat-req">0</div>
-            <div style="font-size: 10px; color: var(--text-hint); text-transform: uppercase;">Запросов</div>
-        </div>
-        <div class="glass-card" style="text-align: center; margin-bottom: 0;">
-            <div style="font-size: 20px; font-weight: 800;" id="stat-ent">0</div>
-            <div style="font-size: 10px; color: var(--text-hint); text-transform: uppercase;">Входов</div>
-        </div>
-    </div>
-
     <div class="section-title">🏆 Топ пользователей</div>
     <div id="leaderboard-container"></div>
-
-    <!-- Блок rickroll видео (загружается только при скролле до конца) -->
-    <div class="rickroll-container" id="rickroll-section">
-        <div class="rickroll-hint">never gonna give you up... (доскролль до конца 🎵)</div>
-        <div id="youtube-placeholder"></div>
-    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -143,22 +285,18 @@
         const ent = params.get('ent') || 0;
         const topData = params.get('top') || '';
 
-        // Отображаем текстовые данные
         document.getElementById('display-name').innerText = name.startsWith('@') ? name : '@' + name;
         document.getElementById('display-uid').innerText = 'ID: ' + uid;
         document.getElementById('stat-req').innerText = req;
         document.getElementById('stat-ent').innerText = ent;
 
-        // Иконка с первой буквой
         const iconElement = document.getElementById('icon-letter');
         iconElement.innerText = name.replace('@', '').charAt(0).toUpperCase() || '?';
 
-        // Цвет иконки по ID
         const colors = ['#ff5f57', '#3fb950', '#d29922', '#58a6ff', '#bc8cff', '#ff7b72'];
         const colorIndex = isNaN(uid) ? 0 : parseInt(uid) % colors.length;
         iconElement.style.background = colors[colorIndex];
 
-        // Логика уровней и ачивок
         let nextLevel = 10;
         let rank = "Новичок";
         if (req >= 10) {
@@ -176,13 +314,11 @@
         document.getElementById('rank-text').innerText = rank;
         document.getElementById('progress-text').innerText = `${req} / ${nextLevel} XP`;
 
-        // Анимация прогресс-бара
         const progressPercent = Math.min((req / nextLevel) * 100, 100);
         setTimeout(() => {
             document.getElementById('bar-fill').style.width = progressPercent + '%';
         }, 500);
 
-        // ТОП пользователей
         const leaderContainer = document.getElementById('leaderboard-container');
         if (topData) {
             leaderContainer.innerHTML = '';
@@ -204,48 +340,6 @@
                 leaderContainer.innerHTML += html;
             });
         }
-
-        // ────────────────────────────────────────────────────────────────
-        // Загрузка и автозапуск видео только при скролле до конца страницы
-        // ────────────────────────────────────────────────────────────────
-
-        const rickrollSection = document.getElementById('rickroll-section');
-        const placeholder = document.getElementById('youtube-placeholder');
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Видео ещё не вставлено → вставляем iframe с autoplay
-                    if (!placeholder.hasChildNodes()) {
-                        const iframe = document.createElement('iframe');
-                        iframe.width = "100%";
-                        iframe.height = "315";
-                        iframe.src = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1";
-                        iframe.title = "Never Gonna Give You Up";
-                        iframe.frameBorder = "0";
-                        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-                        iframe.allowFullscreen = true;
-                        iframe.style.borderRadius = "16px";
-                        iframe.style.boxShadow = "0 8px 32px rgba(0,0,0,0.5)";
-
-                        placeholder.appendChild(iframe);
-
-                        // Меняем подсказку после запуска
-                        document.querySelector('.rickroll-hint').innerText = 
-                            "never gonna give you up... (теперь точно слышишь 🎶)";
-                    }
-
-                    // Отключаем наблюдение (видео запускается только один раз)
-                    observer.unobserve(rickrollSection);
-                }
-            });
-        }, {
-            threshold: 0.3,                    // ~30% блока видно → запускаем
-            rootMargin: "0px 0px -80px 0px"    // чуть раньше, чем блок полностью внизу
-        });
-
-        // Запускаем наблюдение
-        observer.observe(rickrollSection);
     </script>
 </body>
 </html>
