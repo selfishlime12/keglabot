@@ -13,7 +13,6 @@
             --text-main: #ffffff;
             --text-hint: #8b949e;
         }
-
         body {
             background: var(--bg-color);
             background-image: radial-gradient(circle at top left, rgba(0, 136, 204, 0.1), transparent 40%);
@@ -21,7 +20,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0; padding: 20px; overflow-x: hidden;
         }
-
         /* Шапка профиля */
         .profile-header { text-align: center; margin-bottom: 25px; }
         .user-icon {
@@ -32,7 +30,6 @@
         }
         .user-name { font-size: 22px; font-weight: 800; margin: 0; }
         .user-id { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
-
         /* Карточки */
         .glass-card {
             background: var(--card-bg);
@@ -40,16 +37,14 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 20px; padding: 15px; margin-bottom: 15px;
         }
-
         /* Система уровней */
         .level-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; font-weight: 600; }
         .progress-container { height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; }
-        .progress-fill { 
-            height: 100%; background: linear-gradient(90deg, var(--accent), #58a6ff); 
-            width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); 
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--accent), #58a6ff);
+            width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        /* Сетка ачивок (Заполнение пустого места) */
+        /* Сетка ачивок */
         .achievements-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .badge {
             background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px 5px;
@@ -59,7 +54,6 @@
         .badge.active { border-color: var(--accent); color: white; background: rgba(0, 136, 204, 0.1); }
         .badge-icon { font-size: 20px; display: block; margin-bottom: 5px; filter: grayscale(1); opacity: 0.4; }
         .badge.active .badge-icon { filter: grayscale(0); opacity: 1; }
-
         /* Таблица лидеров */
         .top-item {
             display: flex; align-items: center; padding: 12px;
@@ -70,12 +64,29 @@
         .top-info { flex-grow: 1; }
         .top-name { font-size: 14px; font-weight: 600; }
         .top-count { font-size: 12px; color: var(--accent); font-weight: 700; }
-
         .section-title { font-size: 16px; font-weight: 700; margin: 20px 0 12px 5px; color: var(--text-hint); }
+
+        /* Блок с гифкой в самом низу */
+        .rickroll-container {
+            text-align: center;
+            margin: 60px 0 40px 0;
+            opacity: 0.92;
+        }
+        .rickroll-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .rickroll-text {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--text-hint);
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
-
     <div class="profile-header">
         <div class="user-icon" id="icon-letter">?</div>
         <h1 class="user-name" id="display-name">Загрузка...</h1>
@@ -90,7 +101,6 @@
         <div class="progress-container">
             <div class="progress-fill" id="bar-fill"></div>
         </div>
-
         <div class="achievements-grid">
             <div class="badge" id="b-1"><span class="badge-icon">🐣</span>Старт</div>
             <div class="badge" id="b-2"><span class="badge-icon">⚡</span>Актив</div>
@@ -113,83 +123,88 @@
     <div class="section-title">🏆 Топ пользователей</div>
     <div id="leaderboard-container"></div>
 
+    <!-- Rick Roll в самом низу для ВСЕХ -->
+    <div class="rickroll-container">
+        <img 
+            src="https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif" 
+            alt="Never Gonna Give You Up"
+        >
+        <div class="rickroll-text">never gonna give you up...</div>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
-tg.expand();
-tg.ready();
+        tg.expand();
+        tg.ready();
 
-const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name') || 'Пользователь';
+        const uid = params.get('uid') || 'Не определен';
+        const req = parseInt(params.get('req')) || 0;
+        const ent = params.get('ent') || 0;
+        const topData = params.get('top') || '';
 
-// Получаем данные
-const name = params.get('name') || 'Пользователь';
-const uid = params.get('uid') || 'Не определен';
-const req = parseInt(params.get('req')) || 0;
-const ent = params.get('ent') || 0;
-const topData = params.get('top') || '';
+        // Отображаем текстовые данные
+        document.getElementById('display-name').innerText = name.startsWith('@') ? name : '@' + name;
+        document.getElementById('display-uid').innerText = 'ID: ' + uid;
+        document.getElementById('stat-req').innerText = req;
+        document.getElementById('stat-ent').innerText = ent;
 
-// 1. Отображаем текстовые данные
-document.getElementById('display-name').innerText = name.startsWith('@') ? name : '@' + name;
-document.getElementById('display-uid').innerText = 'ID: ' + uid;
-document.getElementById('stat-req').innerText = req;
-document.getElementById('stat-ent').innerText = ent;
+        // Иконка с первой буквой
+        const iconElement = document.getElementById('icon-letter');
+        iconElement.innerText = name.replace('@', '').charAt(0).toUpperCase() || '?';
 
-// 2. Генерация красивой иконки (первая буква имени)
-const iconElement = document.getElementById('icon-letter');
-iconElement.innerText = name.replace('@', '').charAt(0).toUpperCase();
+        // Цвет иконки по ID
+        const colors = ['#ff5f57', '#3fb950', '#d29922', '#58a6ff', '#bc8cff', '#ff7b72'];
+        const colorIndex = isNaN(uid) ? 0 : parseInt(uid) % colors.length;
+        iconElement.style.background = colors[colorIndex];
 
-// Генерируем цвет на основе ID, чтобы у каждого был свой постоянный цвет
-const colors = ['#ff5f57', '#3fb950', '#d29922', '#58a6ff', '#bc8cff', '#ff7b72'];
-const colorIndex = isNaN(uid) ? 0 : parseInt(uid) % colors.length;
-iconElement.style.background = colors[colorIndex];
+        // Логика уровней и ачивок
+        let nextLevel = 10;
+        let rank = "Новичок";
+        if (req >= 10) {
+            rank = "Продвинутый"; nextLevel = 50;
+            document.getElementById('b-1').classList.add('active');
+        }
+        if (req >= 50) {
+            rank = "Мастер"; nextLevel = 100;
+            document.getElementById('b-2').classList.add('active');
+        }
+        if (req >= 100) {
+            rank = "Легенда"; nextLevel = req + 1;
+            document.getElementById('b-3').classList.add('active');
+        }
+        document.getElementById('rank-text').innerText = rank;
+        document.getElementById('progress-text').innerText = `${req} / ${nextLevel} XP`;
 
-// 3. Логика уровней и ачивок
-let nextLevel = 10;
-let rank = "Новичок";
+        // Анимация прогресс-бара
+        const progressPercent = Math.min((req / nextLevel) * 100, 100);
+        setTimeout(() => {
+            document.getElementById('bar-fill').style.width = progressPercent + '%';
+        }, 500);
 
-if (req >= 10) { 
-    rank = "Продвинутый"; nextLevel = 50; 
-    document.getElementById('b-1').classList.add('active'); 
-}
-if (req >= 50) { 
-    rank = "Мастер"; nextLevel = 100; 
-    document.getElementById('b-2').classList.add('active'); 
-}
-if (req >= 100) { 
-    rank = "Легенда"; nextLevel = req + 1; 
-    document.getElementById('b-3').classList.add('active'); 
-}
+        // ТОП пользователей
+        const leaderContainer = document.getElementById('leaderboard-container');
+        if (topData) {
+            leaderContainer.innerHTML = '';
+            topData.split('|').forEach((item, index) => {
+                if (!item) return;
+                const [username, count] = item.split(':');
+                const rankColor = index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : '#8b949e';
 
-document.getElementById('rank-text').innerText = rank;
-document.getElementById('progress-text').innerText = `${req} / ${nextLevel} XP`;
-
-// Анимация полоски
-const progressPercent = Math.min((req / nextLevel) * 100, 100);
-setTimeout(() => {
-    document.getElementById('bar-fill').style.width = progressPercent + '%';
-}, 500);
-
-// 4. Отрисовка ТОПа
-const leaderContainer = document.getElementById('leaderboard-container');
-if (topData) {
-    leaderContainer.innerHTML = ''; // Очистить перед заполнением
-    topData.split('|').forEach((item, index) => {
-        if (!item) return;
-        const [username, count] = item.split(':');
-        const rankColor = index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : '#8b949e';
-        
-        const html = `
-            <div class="top-item">
-                <div class="top-rank" style="color: ${rankColor}">#${index + 1}</div>
-                <div class="top-avatar" style="background: ${colors[username.length % colors.length]}">${username.charAt(0).toUpperCase()}</div>
-                <div class="top-info">
-                    <div class="top-name">@${username}</div>
-                </div>
-                <div class="top-count">${count} req</div>
-            </div>
-        `;
-        leaderContainer.innerHTML += html;
-    });
-}
+                const html = `
+                    <div class="top-item">
+                        <div class="top-rank" style="color: ${rankColor}">#${index + 1}</div>
+                        <div class="top-avatar" style="background: ${colors[username.length % colors.length]}">${username.charAt(0).toUpperCase()}</div>
+                        <div class="top-info">
+                            <div class="top-name">@${username}</div>
+                        </div>
+                        <div class="top-count">${count} req</div>
+                    </div>
+                `;
+                leaderContainer.innerHTML += html;
+            });
+        }
     </script>
 </body>
 </html>
