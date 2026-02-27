@@ -53,53 +53,46 @@
 
         .troll {
             position: absolute;
-            width: 24px;
-            height: 24px;
-            background: url('https://i.imgur.com/3j2w3.gif') center / contain no-repeat; /* классический троллфейс-гифка */
-            opacity: 0.6;
+            width: 28px;
+            height: 28px;
+            background: url('https://media.tenor.com/9494080349948576961/AAAAM/troll-face-meme-tr.gif') center / contain no-repeat;
+            opacity: 0.75;
             animation: float linear infinite, twinkle 4s ease-in-out infinite alternate;
-            border-radius: 50%;
             box-shadow: 
-                0 0 8px 2px rgba(255,255,255,0.7),
-                0 0 20px 6px rgba(255,0,255,0.5),
-                0 0 40px 12px rgba(200,0,200,0.3); /* кометный след */
+                0 0 8px 3px rgba(255,255,255,0.8),
+                0 0 25px 8px rgba(255,100,255,0.5),
+                0 0 50px 15px rgba(180,0,255,0.3);
         }
 
         @keyframes float {
             0%   { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(var(--dx), var(--dy)) rotate(360deg); } /* лёгкий поворот для живости */
+            100% { transform: translate(var(--dx), var(--dy)) rotate(15deg); }
         }
 
         @keyframes twinkle {
-            from { opacity: 0.4; transform: scale(0.8); }
-            to   { opacity: 0.85; transform: scale(1.1); }
+            from { opacity: 0.5; }
+            to   { opacity: 0.95; }
         }
 
-        /* Гифка в самом верхнем левом углу карточки профиля */
+        /* Гифка в самом верхнем левом углу, чуть смещена вниз */
         .fire-gif {
-            width: 80px;
-            height: 80px;
+            position: fixed;
+            top: 25px;     /* чуть ниже самого верха */
+            left: 20px;
+            width: 85px;
+            height: 85px;
             pointer-events: none;
-            opacity: 0.85;
-            position: absolute;
-            top: -30px;       /* чуть выше заголовка */
-            left: 10px;       /* левый край */
-            z-index: 2;
+            z-index: 1000;
+            opacity: 0.9;
         }
 
-        .profile-header { 
-            text-align: center; 
-            margin-bottom: 40px; 
-            position: relative; 
-        }
-
+        .profile-header { text-align: center; margin-bottom: 45px; position: relative; }
         .user-icon {
             width: 70px; height: 70px; background: var(--accent);
             border-radius: 50%; margin: 0 auto 10px;
             display: flex; align-items: center; justify-content: center;
             font-size: 32px; box-shadow: 0 0 15px var(--accent-glow);
         }
-
         .user-name { font-size: 22px; font-weight: 800; margin: 0; }
         .user-id { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
 
@@ -107,7 +100,7 @@
         .level-card {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
             border-radius: 20px;
             padding: 15px;
             display: flex;
@@ -120,123 +113,52 @@
         .level-right { text-align: right; }
         .level-name { font-size: 18px; font-weight: 700; }
         .progress-container {
-            height: 8px;
-            background: #21262d;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 8px;
-            width: 180px;
+            height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; margin-top: 8px; width: 180px;
         }
         .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #58a6ff);
-            width: 0%;
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%; background: linear-gradient(90deg, var(--accent), #58a6ff); width: 0%; transition: width 1s cubic-bezier(0.4,0,0.2,1);
         }
 
         .mirror-photo {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            transform: scaleX(-1);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
+            transform: scaleX(-1); box-shadow: 0 0 15px rgba(255,215,0,0.4);
         }
 
         .glass-card {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
             border-radius: 20px;
             padding: 15px;
             margin-bottom: 15px;
         }
 
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .achievements-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
 
         .badge {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 10px 5px;
-            text-align: center;
-            font-size: 10px;
-            color: var(--text-hint);
-            border: 1px solid transparent;
-            transition: 0.3s;
+            background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px 5px;
+            text-align: center; font-size: 10px; color: var(--text-hint);
+            border: 1px solid transparent; transition: 0.3s;
         }
+        .badge.active { border-color: var(--accent); color: white; background: rgba(0,136,204,0.1); }
+        .badge-icon { font-size: 20px; display: block; margin-bottom: 5px; filter: grayscale(1); opacity: 0.4; }
+        .badge.active .badge-icon { filter: grayscale(0); opacity: 1; }
 
-        .badge.active {
-            border-color: var(--accent);
-            color: white;
-            background: rgba(0, 136, 204, 0.1);
-        }
-
-        .badge-icon {
-            font-size: 20px;
-            display: block;
-            margin-bottom: 5px;
-            filter: grayscale(1);
-            opacity: 0.4;
-        }
-
-        .badge.active .badge-icon {
-            filter: grayscale(0);
-            opacity: 1;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin: 20px 0 12px 5px;
-            color: var(--text-hint);
-        }
+        .section-title { font-size: 16px; font-weight: 700; margin: 20px 0 12px 5px; color: var(--text-hint); }
 
         .top-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 15px;
-            margin-bottom: 8px;
+            display: flex; align-items: center; padding: 12px;
+            background: rgba(255,255,255,0.02); border-radius: 15px; margin-bottom: 8px;
         }
-
         .top-rank { width: 25px; font-weight: 800; color: var(--accent); }
-        .top-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: #30363d; margin-right: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: bold;
-        }
+        .top-avatar { width: 32px; height: 32px; border-radius: 50%; background: #30363d; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; }
         .top-info { flex-grow: 1; }
         .top-name { font-size: 14px; font-weight: 600; }
         .top-count { font-size: 12px; color: var(--accent); font-weight: 700; }
 
-        .rickroll-container {
-            text-align: center;
-            margin: 80px 0 60px 0;
-            opacity: 0.92;
-            min-height: 350px;
-        }
-
-        .rickroll-container iframe {
-            width: 100%;
-            max-width: 560px;
-            height: 315px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        }
-
-        .rickroll-hint {
-            margin-bottom: 16px;
-            font-size: 15px;
-            color: var(--text-hint);
-            font-style: italic;
-        }
+        .rickroll-container { text-align: center; margin: 80px 0 60px 0; opacity: 0.92; min-height: 350px; }
+        .rickroll-container iframe { width: 100%; max-width: 560px; height: 315px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        .rickroll-hint { margin-bottom: 16px; font-size: 15px; color: var(--text-hint); font-style: italic; }
     </style>
 </head>
 <body>
@@ -245,12 +167,13 @@
     <div class="stars" id="stars-container"></div>
 
     <div class="profile-header">
-        <!-- Гифка теперь в самом верхнем левом углу заголовка -->
+        <!-- Гифка в самом верхнем левом углу, чуть смещена вниз -->
         <img 
             src="https://tenor.com/ru/view/fire-writing-gif-25649629.gif" 
             alt="Fire writing" 
             class="fire-gif"
         >
+
         <div class="user-icon" id="icon-letter">?</div>
         <h1 class="user-name" id="display-name">Загрузка...</h1>
         <div class="user-id" id="display-uid">ID: 00000000</div>
@@ -259,19 +182,13 @@
     <div class="level-wrapper">
         <div class="level-card">
             <div class="level-left">
-                <img 
-                    src="https://i.pinimg.com/736x/aa/56/fe/aa56fee8b90fc5162abefd6c98ee7b7a.jpg" 
-                    alt="Mirror photo" 
-                    class="mirror-photo"
-                >
+                <img src="https://i.pinimg.com/736x/aa/56/fe/aa56fee8b90fc5162abefd6c98ee7b7a.jpg" alt="Mirror photo" class="mirror-photo">
                 <div>
                     <div class="level-name" id="rank-text">Новичок</div>
                     <div class="progress-container">
                         <div class="progress-fill" id="bar-fill"></div>
                     </div>
-                    <div id="progress-text" style="font-size:12px; color:var(--text-hint); margin-top:4px;">
-                        0 / 10 XP
-                    </div>
+                    <div id="progress-text" style="font-size:12px; color:var(--text-hint); margin-top:4px;">0 / 10 XP</div>
                 </div>
             </div>
 
@@ -293,7 +210,6 @@
     <div class="section-title">🏆 Топ пользователей</div>
     <div id="leaderboard-container"></div>
 
-    <!-- Rick Roll видео -->
     <div class="rickroll-container" id="rickroll-section">
         <div class="rickroll-hint">never gonna give you up... (доскролль до конца 🎵)</div>
         <div id="youtube-placeholder"></div>
@@ -313,7 +229,7 @@
             troll.style.top = Math.random() * 100 + '%';
             troll.style.left = Math.random() * 100 + '%';
 
-            const size = 16 + Math.random() * 16; // 16–32px для троллфейсов
+            const size = 24 + Math.random() * 14; // размер троллфейсов
             troll.style.width = size + 'px';
             troll.style.height = size + 'px';
 
@@ -348,18 +264,9 @@
 
         let nextLevel = 10;
         let rank = "Новичок";
-        if (req >= 10) {
-            rank = "Продвинутый"; nextLevel = 50;
-            document.getElementById('b-1').classList.add('active');
-        }
-        if (req >= 50) {
-            rank = "Мастер"; nextLevel = 100;
-            document.getElementById('b-2').classList.add('active');
-        }
-        if (req >= 100) {
-            rank = "Легенда"; nextLevel = req + 1;
-            document.getElementById('b-3').classList.add('active');
-        }
+        if (req >= 10) { rank = "Продвинутый"; nextLevel = 50; document.getElementById('b-1').classList.add('active'); }
+        if (req >= 50) { rank = "Мастер"; nextLevel = 100; document.getElementById('b-2').classList.add('active'); }
+        if (req >= 100) { rank = "Легенда"; nextLevel = req + 1; document.getElementById('b-3').classList.add('active'); }
         document.getElementById('rank-text').innerText = rank;
         document.getElementById('progress-text').innerText = `${req} / ${nextLevel} XP`;
 
@@ -409,11 +316,9 @@
                         iframe.allowFullscreen = true;
                         iframe.style.borderRadius = "16px";
                         iframe.style.boxShadow = "0 8px 32px rgba(0,0,0,0.5)";
-
                         placeholder.appendChild(iframe);
 
-                        document.querySelector('.rickroll-hint').innerText = 
-                            "never gonna give you up...";
+                        document.querySelector('.rickroll-hint').innerText = "never gonna give you up...";
                     }
                 } else {
                     if (entry.isIntersecting) {
