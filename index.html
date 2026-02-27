@@ -66,21 +66,23 @@
         .top-count { font-size: 12px; color: var(--accent); font-weight: 700; }
         .section-title { font-size: 16px; font-weight: 700; margin: 20px 0 12px 5px; color: var(--text-hint); }
 
-        /* Блок с гифкой в самом низу */
+        /* Блок с rickroll видео */
         .rickroll-container {
             text-align: center;
-            margin: 60px 0 40px 0;
+            margin: 80px 0 60px 0;
             opacity: 0.92;
+            min-height: 350px; /* чтобы было место для видео */
         }
-        .rickroll-container img {
-            max-width: 100%;
-            height: auto;
+        .rickroll-container iframe {
+            width: 100%;
+            max-width: 560px;
+            height: 315px;
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
-        .rickroll-text {
-            margin-top: 12px;
-            font-size: 13px;
+        .rickroll-hint {
+            margin-bottom: 16px;
+            font-size: 15px;
             color: var(--text-hint);
             font-style: italic;
         }
@@ -123,13 +125,12 @@
     <div class="section-title">🏆 Топ пользователей</div>
     <div id="leaderboard-container"></div>
 
-    <!-- Rick Roll в самом низу для ВСЕХ -->
-    <div class="rickroll-container">
-        <img 
-            src="https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif" 
-            alt="Never Gonna Give You Up"
-        >
-        <div class="rickroll-text">never gonna give you up...</div>
+    <!-- Rick Roll видео (загружается и запускается при скролле до блока) -->
+    <div class="rickroll-container" id="rickroll-section">
+        <div class="rickroll-hint">never gonna give you up... (доскролль, если ещё не услышал 🎵)</div>
+        <div id="youtube-placeholder">
+            <!-- Видео будет вставлено сюда динамически -->
+        </div>
     </div>
 
     <script>
@@ -205,6 +206,48 @@
                 leaderContainer.innerHTML += html;
             });
         }
+
+        // ────────────────────────────────────────────────────────────────
+        // Логика: загрузка и автозапуск видео при скролле до блока
+        // ────────────────────────────────────────────────────────────────
+
+        const rickrollSection = document.getElementById('rickroll-section');
+        const placeholder = document.getElementById('youtube-placeholder');
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Видео ещё не загружено → вставляем iframe с autoplay
+                    if (!placeholder.hasChildNodes()) {
+                        const iframe = document.createElement('iframe');
+                        iframe.width = "100%";
+                        iframe.height = "315";
+                        iframe.src = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1";
+                        iframe.title = "Never Gonna Give You Up";
+                        iframe.frameBorder = "0";
+                        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                        iframe.allowFullscreen = true;
+                        iframe.style.borderRadius = "16px";
+                        iframe.style.boxShadow = "0 8px 32px rgba(0,0,0,0.5)";
+
+                        placeholder.appendChild(iframe);
+
+                        // Подсказка меняется после запуска
+                        document.querySelector('.rickroll-hint').innerText = 
+                            "never gonna give you up... (теперь точно слышишь 🎶)";
+                    }
+
+                    // Можно отключить наблюдение, если видео нужно запустить только один раз
+                    observer.unobserve(rickrollSection);
+                }
+            });
+        }, {
+            threshold: 0.4,          // ~40% блока видно → запускаем
+            rootMargin: "0px 0px -100px 0px"  // чуть раньше, чем блок полностью внизу
+        });
+
+        // Начинаем наблюдать за блоком
+        observer.observe(rickrollSection);
     </script>
 </body>
 </html>
